@@ -1,4 +1,4 @@
-einops==0.7.0
+leinops==0.7.0
 fancy_einsum==0.0.3
 google_api_python_client==2.108.0
 matplotlib==3.7.3
@@ -9,3 +9,4 @@ torch==2.1.1
 tqdm==4.65.0
 transformer_lens==1.12.0
 transformers==4.35.0
+hydra-core
