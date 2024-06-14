@@ -1,4 +1,4 @@
-leinops==0.7.0
+einops==0.7.0
 fancy_einsum==0.0.3
 google_api_python_client==2.108.0
 matplotlib==3.7.3
