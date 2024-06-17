@@ -54,7 +54,7 @@ def get_pplm_batch_iterator(
 
         data.extend(file_data)
 
-    random.shuffle(file_data)
+    random.shuffle(data)
     if split == "train":
         data = data[:-valid_size]
     else:
