@@ -5,13 +5,13 @@ seed: 42
 exp_name: ???
 
 # name of the dataset to train on
-dataset_name: "toxicity_pairwise"
+dataset_name: "defense_generation"
 
-valid_size: 64
+valid_size: 30
 # the batch size for training; for FSDP, the batch size per GPU is batch_size / (grad_accumulation_steps * num_gpus)
-batch_size: 4
+batch_size: 1
 # the batch size during evaluation and sampling, if enabled
-eval_batch_size: 8
+eval_batch_size: 2
 
 # debug mode (disables wandb, model checkpointing, etc.)
 debug: false
@@ -55,11 +55,11 @@ gradient_accumulation_steps: 1
 max_grad_norm: 10.0
 
 # the maximum allowed length for an input (prompt + response)
-max_length: 256
-max_new_tokens: 64
+max_length: 1200
+max_new_tokens: 300
 
 # the maximum allowed length for a prompt
-max_prompt_length: 64
+max_prompt_length: 1000
 
 # the number of epochs to train for; if null, must specify n_examples
 n_epochs: 5
@@ -71,25 +71,25 @@ trainer: BasicTrainer
 optimizer: RMSprop
 
 # number of linear warmup steps for the learning rate
-warmup_steps: 150
+warmup_steps: 5
 
 # whether or not to use activation/gradient checkpointing
 activation_checkpointing: false
 
 # evaluate and save model every eval_every steps
-eval_every: 100
-save_every: 100
+eval_every: 20
+save_every: 20
 validation_metric: "loss/valid"
 validation_direction: "min"
 validation_patience: 30
 
 sample_during_eval: false
-sample_every: 2000
+sample_every: 50
 
 # prevent wandb from logging more than once per minimum_log_interval_secs
 minimum_log_interval_secs: 2.0
 
 defaults:
 - _self_
-- model: gpt2-medium
+- model: pythia-1.4b
 - loss: dpo # which loss function, either sft or dpo (specify loss.beta if using dpo)

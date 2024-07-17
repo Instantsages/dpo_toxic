@@ -51,7 +51,6 @@ def get_pplm_batch_iterator(
     for filename in tqdm(filenames):
         with open(filename, "r") as file_p:
             file_data = file_p.readlines()
-
         data.extend(file_data)
 
     random.shuffle(data)
