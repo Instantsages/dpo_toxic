@@ -16,8 +16,7 @@ from omegaconf import OmegaConf, DictConfig
 import wandb
 import sys
 
-sys.path.append("/mnt/disks/disk1/dpo_toxic")
-#sys.path.append("/home/ywu2/dpo_toxic")
+sys.path.append("/home/yifanwu6/dpo_toxic")
 
 import toxicity.train_dpo.trainers as trainers
 from toxicity.train_dpo.dpo_utils import (
