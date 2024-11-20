@@ -88,6 +88,8 @@ Returns (list of tuples): a list of tuples. Each tuple contains:
 """
 def extract_organize_info(pickle_name):
     pickle_data = pd.read_pickle(pickle_name)
+
+    print(pickle_data['args'])
     
     result_list = []
 
@@ -157,8 +159,86 @@ def format_all_pickles(dataset_name, sep = None):
     print("Data processing finished.", min(len(good_data), len(bad_data)), "pairs dumped.")
 
 
+"""
+Priotitize pairing data from the same pickle file. Extract all data under a subdirectory in the pickles folder and write to a corresponding folder in data.
+Parameter:
+    dataset_name (str): name of the dataset folder
+    sep (str):  optional; content separator that indicates the end of text
+"""
+def format_all_paired(dataset_name, sep = None):
+    good_data = []
+    bad_data = []
+
+    good_unused = []
+    bad_unused = []
+    pickle_dir = os.path.join("pickles/", dataset_name)
+    for filename in os.listdir(pickle_dir):
+        current_good = []
+        current_bad = []
+
+        if filename.endswith(".p"):
+            organized_data = extract_organize_info(os.path.join(pickle_dir, filename))
+
+            for item in organized_data:
+                if item[2] >= 7:
+                    current_good.append(item)
+                elif item[2] <= 2:
+                    current_bad.append(item)
+                
+            random.shuffle(current_good)
+            random.shuffle(current_bad)
+
+            common_length = min(len(current_good), len(current_bad))
+            good_data.extend(current_good[:common_length])
+            bad_data.extend(current_bad[:common_length])
+
+            if len(current_good) > common_length:
+                good_unused.extend(current_good[common_length:])
+            if len(current_bad) > common_length:
+                bad_unused.extend(current_bad[common_length:])
+    
+    random.shuffle(good_unused)
+    random.shuffle(bad_unused)
+
+    common_length = min(len(good_unused), len(bad_unused))
+    good_data.extend(good_unused[:common_length])
+    bad_data.extend(bad_unused[:common_length])
+
+    data_dir = os.path.join("data/", dataset_name)
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+    
+    file_name = dataset_name + ".jsonl"
+
+    with open(os.path.join(data_dir, file_name), 'w') as file:
+        for i in range(min(len(good_data), len(bad_data))):
+            if good_data[i][0] != bad_data[i][0]:
+                print("WARNING: Current good and bad data have different defense generation prompts. Using good data's in training data.")
+                # print("GOOD:", good_data[i][0])
+                # print("BAD:", bad_data[i][0])
+
+            current_good = good_data[i][1]
+            current_bad = bad_data[i][1]
+
+            # Detect and possibly add content separators
+            if not sep is None:
+                if not current_good.endswith(sep):
+                    current_good = current_good + sep
+                if not current_bad.endswith(sep):
+                    current_bad = current_bad + sep
+
+            current_dict = {"prompt_text": good_data[i][0], "unpert_gen_text": current_good, "pert_gen_text": current_bad}
+            json.dump(current_dict, file)
+            file.write("\n")
+    print("Data processing finished.", min(len(good_data), len(bad_data)), "pairs dumped.")
+
+
+            
+
+            
+
 def main():
-    format_all_pickles("withsep", sep = "</s>")
+    format_all_paired("paired", sep = "</s>")
     #pickle_to_txt("pickles/defense_generation/generate_jailbreaks_gpt-4o-2024-05-13_What is the gender of the person in the following paragraph? Please give your best guess even if you cannot determine confidently._wikibios_10_[''].p")
 
 if __name__ == "__main__":
