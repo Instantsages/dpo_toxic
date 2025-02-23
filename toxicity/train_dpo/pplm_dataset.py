@@ -16,30 +16,12 @@ from torch.nn.utils.rnn import pad_sequence
 from toxicity.train_dpo.dpo_utils import get_local_dir, TemporarilySeededRandom
 from constants import DATA_DIR, GPT2_PAD_IDX
 
-
-def get_pplm_batch_iterator(
-    tokenizer,
-    config,
-    split: str = "train",
-    device: str = "cuda",
-) -> Iterator[Dict]:
+def prepare_dataset(config):
     """
-    Get an iterator over batches of data.
-
-    :params:
-
-    :split: Which split to use.
-    :batch_size: Batch size.
-    :valid_size: Validation size.
+    Prepare dataset to be divided
     """
-    assert split in ["train", "valid"]
+
     data_dir = os.path.join(DATA_DIR, config.dataset_name)
-    batch_size = config.batch_size
-    if split == "valid":
-        batch_size = config.eval_batch_size
-    max_prompt_length = config.max_prompt_length
-    max_new_tokens = config.max_new_tokens
-    valid_size = config.valid_size
 
     filenames = [
         os.path.join(data_dir, filename)
@@ -54,10 +36,42 @@ def get_pplm_batch_iterator(
         data.extend(file_data)
 
     random.shuffle(data)
+
+    return data
+
+
+
+def get_pplm_batch_iterator(
+    tokenizer,
+    config,
+    data,
+    split: str = "train",
+    device: str = "cuda",
+) -> Iterator[Dict]:
+    """
+    Get an iterator over batches of data.
+
+    :params:
+
+    :split: Which split to use.
+    :batch_size: Batch size.
+    :valid_size: Validation size.
+    """
+    assert split in ["train", "valid"]
+    if split == "valid":
+        batch_size = config.eval_batch_size
+    else:
+        batch_size = config.batch_size
+    max_prompt_length = config.max_prompt_length
+    max_new_tokens = config.max_new_tokens
+
+    valid_size = config.valid_size
+
     if split == "train":
         data = data[:-valid_size]
     else:
         data = data[-valid_size:]
+
     data_size = len(data)
 
     for idx in range(0, data_size, batch_size):

@@ -37,7 +37,7 @@ from torch.distributed.fsdp.wrap import transformer_auto_wrap_policy
 import transformers
 from omegaconf import DictConfig
 
-from toxicity.train_dpo.pplm_dataset import get_pplm_batch_iterator
+from toxicity.train_dpo.pplm_dataset import prepare_dataset, get_pplm_batch_iterator
 from toxicity.train_dpo.dpo_utils import (
     slice_and_move_batch_for_device,
     formatted_dict,
@@ -298,14 +298,18 @@ class BasicTrainer(object):
         self.reference_model = reference_model
         self.kl_criterion = KLDivLoss(reduction="none", log_target=True)
 
+        self.data = prepare_dataset(self.config)
+
         self.train_iterator = get_pplm_batch_iterator(
             self.tokenizer,
             self.config,
+            self.data,
             split="train",
         )
         self.eval_iterator = get_pplm_batch_iterator(
             self.tokenizer,
             self.config,
+            self.data,
             split="valid",
         )
         self.eval_batches = list(self.eval_iterator)
