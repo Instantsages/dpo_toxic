@@ -16,6 +16,7 @@ from omegaconf import OmegaConf, DictConfig
 import wandb
 import sys
 
+torch.cuda.empty_cache()
 sys.path.append("/home/yifanwu6/dpo_toxic")
 
 import toxicity.train_dpo.trainers as trainers

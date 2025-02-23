@@ -5,7 +5,7 @@ seed: 42
 exp_name: ???
 
 # name of the dataset to train on
-dataset_name: "paired"
+dataset_name: "paired_only2"
 
 valid_size: 50
 # the batch size for training; for FSDP, the batch size per GPU is batch_size / (grad_accumulation_steps * num_gpus)
