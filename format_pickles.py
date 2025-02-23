@@ -197,12 +197,12 @@ def format_all_paired(dataset_name, sep = None):
             if len(current_bad) > common_length:
                 bad_unused.extend(current_bad[common_length:])
     
-    random.shuffle(good_unused)
-    random.shuffle(bad_unused)
+    # random.shuffle(good_unused)
+    # random.shuffle(bad_unused)
 
-    common_length = min(len(good_unused), len(bad_unused))
-    good_data.extend(good_unused[:common_length])
-    bad_data.extend(bad_unused[:common_length])
+    # common_length = min(len(good_unused), len(bad_unused))
+    # good_data.extend(good_unused[:common_length])
+    # bad_data.extend(bad_unused[:common_length])
 
     data_dir = os.path.join("data/", dataset_name)
     if not os.path.exists(data_dir):
@@ -238,7 +238,7 @@ def format_all_paired(dataset_name, sep = None):
             
 
 def main():
-    format_all_paired("paired", sep = "</s>")
+    format_all_paired("paired_only2", sep = "</s>")
     #pickle_to_txt("pickles/defense_generation/generate_jailbreaks_gpt-4o-2024-05-13_What is the gender of the person in the following paragraph? Please give your best guess even if you cannot determine confidently._wikibios_10_[''].p")
 
 if __name__ == "__main__":
