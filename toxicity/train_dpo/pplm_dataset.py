@@ -67,15 +67,16 @@ def get_pplm_batch_iterator(
 
     valid_size = config.valid_size
 
-    if split == "train":
-        data = data[:-valid_size]
-    else:
-        data = data[-valid_size:]
+    new_data = data[:-valid_size]
+    if split != "train":
+        new_data = data[-valid_size:]
+        print("Showing validation data:")
+        print(new_data)
 
-    data_size = len(data)
+    data_size = len(new_data)
 
     for idx in range(0, data_size, batch_size):
-        batch = data[idx : idx + batch_size]
+        batch = new_data[idx : idx + batch_size]
         batch = [json.loads(x.strip()) for x in batch]
 
         prompt_text = [x["prompt_text"] for x in batch]
